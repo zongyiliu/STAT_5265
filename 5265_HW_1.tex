@@ -1,0 +1,468 @@
+\documentclass[letterpaper]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!70}
+\colorlet{Mycolor1}{green!10!orange}
+\definecolor{Mycolor2}{HTML}{00F9DE}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{lipsum}
+\usepackage{fancyvrb}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{tcolorbox}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{hyperref} 
+\usepackage{xcolor} % For custom colors
+\lstset{
+	language=Python,                % Choose the language (e.g., Python, C, R)
+	basicstyle=\ttfamily\small, % Font size and type
+	keywordstyle=\color{blue},  % Keywords color
+	commentstyle=\color{gray},  % Comments color
+	stringstyle=\color{red},    % String color
+	numbers=left,               % Line numbers
+	numberstyle=\tiny\color{gray}, % Line number style
+	stepnumber=1,               % Numbering step
+	breaklines=true,            % Auto line break
+	backgroundcolor=\color{black!5}, % Light gray background
+	frame=single,               % Frame around the code
+}
+\usepackage{float}
+\usepackage[]{amsthm} %lets us use \begin{proof}
+	\usepackage[]{amssymb} %gives us the character \varnothing
+	
+	\title{Homework 1, MATH 5265}
+	\author{Zongyi Liu}
+	\date{Wed, Sept 24, 2025}
+	\begin{document}
+		\maketitle
+		
+		\section{Question 1 }
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ be a Brownian motion and consider the SDEs defining the Geometric Brownian Motion (GBM). $S= \left(S_{t}\right)_{t \geq 0}$, and OU process, $X=\left(X_{t}\right)_{t \geq 0}$:
+		
+		$$
+		\begin{gathered}
+			d S_{t}=\mu S_{t} d t+\sigma S_{t} d W_{t}, \quad S_{0}=s_{0} \\
+			d X_{t}=\kappa\left(\theta-X_{t}\right) d t+\sigma d W_{t}, \quad X_{0}=x_{0}
+		\end{gathered}
+		$$
+		
+		Fix $\Delta t>0$, and let $\mu=0.25, \kappa=0.2, \theta=1, \sigma=0.5$ and $s_{0}=x_{0}=1.2$. From the SDEs we have that${ }^{1}$:
+		
+		$$
+		\begin{gathered}
+			S_{t+\Delta t} \stackrel{d}{\approx} S_{t}+\mu S_{t} \Delta t+\sigma S_{t} \sqrt{\Delta t} Z, \quad Z \sim N(0,1), \\
+			X_{t+\Delta t} \stackrel{d}{\approx} X_{t}+\kappa\left(\theta-X_{t}\right) \Delta t+\sigma \sqrt{\Delta t} Z, \quad Z \sim N(0,1) .
+		\end{gathered}
+		$$
+
+		
+		\footnotetext{${ }^{1}$ Here $\stackrel{d}{\approx}$ is to be read as "is approximately equal to in distribution".
+		}Using this observation, simulate (and plot) 10 paths of the GBM and OU process. You may use any programming language that you are familiar with for this task. Include your code as a separate file in your submission.
+	
+	\textbf{Answer}
+	
+	\includegraphics[max width=\textwidth, center]{Q1}
+	\captionof{figure}{Two plots showing 10 pathes of GBM and OU processes}
+
+
+Here I used R. 
+
+\begin{lstlisting}
+     mu    <- 0.25
+     kappa <- 0.2
+     theta <- 1
+     sigma <- 0.5
+     s0    <- 1.2
+     x0    <- 1.2
+     
+     n_paths <- 10        # number of sample paths
+     Tend    <- 2.0       # time horizon (e.g., years)
+     dt      <- 1/252     # time step Δt
+     n_steps <- ceiling(Tend / dt)
+     tvec    <- seq(0, n_steps) * dt
+     
+     S <- matrix(NA_real_, nrow = n_steps + 1, ncol = n_paths)
+     X <- matrix(NA_real_, nrow = n_steps + 1, ncol = n_paths)
+     S[1, ] <- s0
+     X[1, ] <- x0
+     
+     # Simulation (Euler–Maruyama)
+     for (j in 1:n_paths) {
+     	Z <- rnorm(n_steps)  # N(0,1) increments for this path
+     	
+     	for (k in 1:n_steps) {
+     		# GBM: S_{t+Δt} ≈ S_t + μ S_t Δt + σ S_t sqrt(Δt) Z
+     		S[k + 1, j] <- S[k, j] +
+     		mu * S[k, j] * dt +
+     		sigma * S[k, j] * sqrt(dt) * Z[k]
+     		
+     		# OU: X_{t+Δt} ≈ X_t + κ(θ − X_t) Δt + σ sqrt(Δt) Z
+     		X[k + 1, j] <- X[k, j] +
+     		kappa * (theta - X[k, j]) * dt +
+     		sigma * sqrt(dt) * Z[k]
+     	}
+     }
+     
+     # Plot the graph
+     op <- par(mfrow = c(1, 2), mar = c(4.2, 4.2, 3.2, 1.2))
+     
+     matplot(tvec, S, type = "l", lty = 1, lwd = 1,
+     xlab = "Time", ylab = "S(t)",
+     main = "GBM: 10 Euler–Maruyama Paths")
+     abline(h = 0, col = "gray70")
+     
+     matplot(tvec, X, type = "l", lty = 1, lwd = 1,
+     xlab = "Time", ylab = "X(t)",
+     main = "OU: 10 Euler–Maruyama Paths")
+     abline(h = theta, col = "gray70", lwd = 2)  # long-run mean
+     
+     par(op)
+\end{lstlisting}
+	
+		
+		\clearpage
+		
+		
+		\section{Question 2}
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ and $B=\left(B_{t}\right)_{t \geq 0}$ be Brownian motions with instantaneous correlation $\rho \in[-1,1]$. Find the mean and variance of the following random variables:
+		
+		\begin{enumerate}
+			\item $W_{r}+W_{s}+W_{t}$ for $0 \leq r<s<t$.
+			\item $\exp \left\{a W_{t}+b B_{t}\right\}$ for $t>0$.
+			\item $W_{s} B_{t}$ for $0 \leq s<t$.
+		\end{enumerate}
+		
+		Hint: For (2) recall the distribution of the sum of two jointly normal random variables. Then, use the moment generating function formula for this distribution.
+		
+		
+		\textbf{Answer}
+		
+		
+		Let $W = (W_t)_{t \ge 0}$ and $B = (B_t)_{t \ge 0}$ be standard Brownian motions with instantaneous correlation $\rho \in [-1, 1]$. The key covariance properties are:
+		\begin{itemize}
+			\item $\operatorname{Cov}(W_t, W_s) = \operatorname{Cov}(B_t, B_s) = \min(t, s)$
+			\item $\operatorname{Cov}(W_t, B_s) = \rho \min(t, s)$
+			\item $\mathbb{E}[W_t] = \mathbb{E}[B_t] = 0$
+		\end{itemize}
+		
+		\underline{Part 1.} $X = W_r + W_s + W_t$ for $0 \le r < s < t$
+		
+		\emph{Mean}
+		
+		Since the expected value of a Brownian motion is zero:
+		$$ \mathbb{E}[X] = \mathbb{E}[W_r] + \mathbb{E}[W_s] + \mathbb{E}[W_t] = 0 + 0 + 0 = {0} $$
+		
+		\emph{Variance}
+		
+		Using the properties $\operatorname{Var}(W_u) = u$ and $\operatorname{Cov}(W_u, W_v) = \min(u, v)$:
+		\begin{align*}
+			\operatorname{Var}(X) &= \sum \operatorname{Var}(W_u) + 2 \sum_{u<v} \operatorname{Cov}(W_u, W_v) \\
+			&= \operatorname{Var}(W_r) + \operatorname{Var}(W_s) + \operatorname{Var}(W_t) \\
+			& \quad + 2 \operatorname{Cov}(W_r, W_s) + 2 \operatorname{Cov}(W_r, W_t) + 2 \operatorname{Cov}(W_s, W_t) \\
+			&= r + s + t + 2 \min(r, s) + 2 \min(r, t) + 2 \min(s, t)
+		\end{align*}
+		Since $0 \le r < s < t$, we have $\min(r, s)=r$, $\min(r, t)=r$, and $\min(s, t)=s$.
+		\begin{align*}
+			\operatorname{Var}(X) &= r + s + t + 2(r) + 2(r) + 2(s) \\
+			&= r + s + t + 4r + 2s \\
+			&= {5r + 3s + t}
+		\end{align*}
+		
+		\hrule
+		\bigskip
+		
+		\underline{Part 2.} $Y = \exp\{aW_t + bB_t\}$ for $t > 0$
+		
+		Let $Z = aW_t + bB_t$. Since $W_t$ and $B_t$ are jointly Gaussian, $Z$ is a Gaussian random variable, $Z \sim \mathcal{N}(\mu_Z, \sigma_Z^2)$. $Y$ is log-normally distributed.
+		
+		\emph{Mean of $Z$}
+		
+		$$ \mu_Z = \mathbb{E}[aW_t + bB_t] = a\mathbb{E}[W_t] + b\mathbb{E}[B_t] = 0 $$
+		
+		\emph{Variance of $Z$}
+		
+		\begin{align*}
+			\sigma_Z^2 &= \operatorname{Var}(aW_t + bB_t) \\
+			&= a^2\operatorname{Var}(W_t) + b^2\operatorname{Var}(B_t) + 2ab \operatorname{Cov}(W_t, B_t) \\
+			&= a^2t + b^2t + 2ab(\rho t) \\
+			&= t(a^2 + b^2 + 2ab\rho)
+		\end{align*}
+		
+		\emph{Mean of $Y$}
+		
+		For $Y = e^Z$, $\mathbb{E}[Y] = \exp\left\{\mu_Z + \frac{1}{2}\sigma_Z^2\right\}$.
+		$$ \mathbb{E}[Y] = {\exp\left\{\frac{t}{2}(a^2 + b^2 + 2ab\rho)\right\}} $$
+		
+		\emph{Variance of $Y$}
+		
+		For $Y = e^Z$, $\operatorname{Var}(Y) = \mathbb{E}[Y]^2 \left(e^{\sigma_Z^2} - 1\right) = e^{2\mu_Z + \sigma_Z^2} (e^{\sigma_Z^2} - 1)$.
+		Since $\mu_Z = 0$:
+		$$ \operatorname{Var}(Y) = e^{\sigma_Z^2} (e^{\sigma_Z^2} - 1) $$
+		$$ \operatorname{Var}(Y) = {\exp\{t(a^2 + b^2 + 2ab\rho)\} \left(\exp\{t(a^2 + b^2 + 2ab\rho)\} - 1\right)} $$
+		
+		\hrule
+		\bigskip
+		
+		\underline{Part 3.} $Z = W_s B_t$ for $0 \le s < t$
+		
+		\emph{Mean}
+		
+		Since $W_s$ and $B_t$ are centered Gaussian variables, $\mathbb{E}[W_s B_t] = \operatorname{Cov}(W_s, B_t) + \mathbb{E}[W_s]\mathbb{E}[B_t]$.
+		$$ \mathbb{E}[Z] = \operatorname{Cov}(W_s, B_t) = \rho \min(s, t) $$
+		Since $s < t$, $\min(s, t) = s$.
+		$$ \mathbb{E}[Z] = {\rho s} $$
+		
+		\emph{Variance}
+		
+		Using the formula $\operatorname{Var}(Z) = \mathbb{E}[Z^2] - (\mathbb{E}[Z])^2$.
+		
+		First, find $\mathbb{E}[Z^2] = \mathbb{E}[W_s^2 B_t^2]$. For centered jointly Gaussian variables, $\mathbb{E}[X_1 X_2 X_3 X_4] = \sum_{\text{pairings}} \operatorname{Cov}(X_i, X_j) \operatorname{Cov}(X_k, X_l)$.
+		\begin{align*}
+			\mathbb{E}[W_s^2 B_t^2] &= \mathbb{E}[W_s W_s B_t B_t] \\
+			&= \operatorname{Cov}(W_s, W_s) \operatorname{Cov}(B_t, B_t) \\
+			& \quad + \operatorname{Cov}(W_s, B_t) \operatorname{Cov}(W_s, B_t) \\
+			& \quad + \operatorname{Cov}(W_s, B_t) \operatorname{Cov}(W_s, B_t) \\
+			&= \operatorname{Var}(W_s)\operatorname{Var}(B_t) + 2 \left(\operatorname{Cov}(W_s, B_t)\right)^2 \\
+			&= (s)(t) + 2 (\rho s)^2 \\
+			&= st + 2\rho^2 s^2
+		\end{align*}
+		Now calculate the variance:
+		\begin{align*}
+			\operatorname{Var}(Z) &= \mathbb{E}[W_s^2 B_t^2] - (\mathbb{E}[W_s B_t])^2 \\
+			&= (st + 2\rho^2 s^2) - (\rho s)^2 \\
+			&= st + 2\rho^2 s^2 - \rho^2 s^2 \\
+			&= {st + \rho^2 s^2}
+		\end{align*}
+		
+		
+		
+		\clearpage
+		
+		\section{Question 3}
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ be a Brownian motion. Report the mean and variance of the following integrals.
+		
+		\begin{enumerate}
+			\item $\int_{0}^{T} W_{s} d W_{s}$
+			\item $\int_{0}^{T} s^{2} d W_{s}$
+			\item $\int_{0}^{T} e^{W_{s}} d W_{s}$
+			\item $\int_{0}^{T} s W_{s} d W_{s}$
+		\end{enumerate}
+		
+		\textbf{Answer}
+
+
+		Let $I_T = \int_{0}^{T} f(s, W_s) d W_{s}$ be an Ito integral. We use the following properties:
+		\begin{itemize}
+			\item {Mean:} $\mathbb{E}[I_T] = 0$.
+			\item {Variance (Itô Isometry):} $\operatorname{Var}(I_T) = \mathbb{E}\left[\int_{0}^{T} f^2(s, W_s) d s\right] = \int_{0}^{T} \mathbb{E}[f^2(s, W_s)] d s$.
+		\end{itemize}
+		
+		\underline{Part 1.}{ $\int_{0}^{T} W_{s} d W_{s}$}
+		
+		The integrand is $f(s, W_s) = W_s$.
+		
+		\emph{Mean}
+		
+		$$ \mathbb{E}\left[\int_{0}^{T} W_{s} d W_{s}\right] = \mathbf{0} $$
+		
+		\emph{Variance}
+		
+		$$ \operatorname{Var}\left(\int_{0}^{T} W_{s} d W_{s}\right) = \int_{0}^{T} \mathbb{E}[W_{s}^2] d s $$
+		Since $\mathbb{E}[W_{s}^2] = \operatorname{Var}(W_s) = s$:
+		$$ \operatorname{Var} = \int_{0}^{T} s \, d s = \left[\frac{s^2}{2}\right]_0^T = {\frac{T^2}{2}} $$
+		
+		\hrule
+		
+	\underline{Part 2.}{ $\int_{0}^{T} s^{2} d W_{s}$}
+		
+		The integrand is $f(s) = s^2$.
+		
+		\emph{Mean}
+		
+		$$ \mathbb{E}\left[\int_{0}^{T} s^{2} d W_{s}\right] = \mathbf{0} $$
+		
+		\emph{Variance}
+		
+		$$ \operatorname{Var}\left(\int_{0}^{T} s^{2} d W_{s}\right) = \int_{0}^{T} (s^{2})^2 d s = \int_{0}^{T} s^{4} d s $$
+		$$ \operatorname{Var} = \left[\frac{s^5}{5}\right]_0^T = {\frac{T^5}{5}} $$
+		
+		\hrule
+		
+		\underline{Part 3.}{ $\int_{0}^{T} e^{W_{s}} d W_{s}$}
+		
+		The integrand is $f(s, W_s) = e^{W_s}$.
+		
+		\emph{Mean}
+		
+		$$ \mathbb{E}\left[\int_{0}^{T} e^{W_{s}} d W_{s}\right] = \mathbf{0} $$
+		
+		\emph{Variance}
+		
+		$$ \operatorname{Var}\left(\int_{0}^{T} e^{W_{s}} d W_{s}\right) = \int_{0}^{T} \mathbb{E}[(e^{W_{s}})^2] d s = \int_{0}^{T} \mathbb{E}[e^{2W_{s}}] d s $$
+		Since $W_s \sim \mathcal{N}(0, s)$, $2W_s \sim \mathcal{N}(0, 4s)$. Using the MGF of a Gaussian variable $\mathbb{E}[e^{aX}] = e^{a\mu + \frac{1}{2}a^2\sigma^2}$:
+		$$ \mathbb{E}[e^{2W_{s}}] = e^{0 + \frac{1}{2}(2)^2 s} = e^{2s} $$
+		$$ \operatorname{Var} = \int_{0}^{T} e^{2s} d s = \left[\frac{1}{2}e^{2s}\right]_0^T = \frac{1}{2}e^{2T} - \frac{1}{2}e^{0} = {\frac{1}{2}(e^{2T} - 1)} $$
+		
+		\hrule
+		
+		\underline{Part 4.}{ $\int_{0}^{T} s W_{s} d W_{s}$}
+		
+		The integrand is $f(s, W_s) = s W_s$.
+		
+		\emph{Mean}
+		
+		$$ \mathbb{E}\left[\int_{0}^{T} s W_{s} d W_{s}\right] = \mathbf{0} $$
+		
+		\emph{Variance}
+		
+		$$ \operatorname{Var}\left(\int_{0}^{T} s W_{s} d W_{s}\right) = \int_{0}^{T} \mathbb{E}[(s W_{s})^2] d s = \int_{0}^{T} s^2 \mathbb{E}[W_{s}^2] d s $$
+		Since $\mathbb{E}[W_{s}^2] = s$:
+		$$ \operatorname{Var} = \int_{0}^{T} s^2 (s) d s = \int_{0}^{T} s^{3} d s = \left[\frac{s^4}{4}\right]_0^T = {\frac{T^4}{4}} $$
+		
+		
+		\clearpage
+		
+		\section{Question 4}
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ and $B=\left(B_{t}\right)_{t \geq 0}$ be Brownian motions with instantaneous correlation $\rho$. Apply Itô's formula to get the dynamics of:
+		
+		\begin{enumerate}
+			\item $X_{t}=\sin \left(t W_{t}\right)$.
+			\item $X_{t}=\operatorname{sigmoid}\left(W_{t}\right)=\left(1+e^{-W_{t}}\right)^{-1}$.
+			\item $X_{t}=S_{t} / P_{t}$ where $S=\left(S_{t}\right)_{t \geq 0}$ and $P=\left(P_{t}\right)_{t \geq 0}$ are Geometric Brownian Motions:
+		\end{enumerate}
+		
+		$$
+		\begin{aligned}
+			d S_{t} & =\mu S_{t} d t+\sigma S_{t} d W_{t} \\
+			d P_{t} & =\nu P_{t} d t+\eta P_{t} d B_{t}
+		\end{aligned}
+		$$
+		
+		\textbf{Answer}
+		
+		\begin{enumerate}
+			\item For $X_t = \sin(tW_t)$, apply It\^o’s formula with 
+			\[
+			f(t,x) = \sin(tx), \quad f_t = x\cos(tx), \quad f_x = t\cos(tx), \quad f_{xx} = -t^2\sin(tx).
+			\]
+			Hence
+			\[
+			dX_t = \Big(W_t\cos(tW_t) - \tfrac12 t^2\sin(tW_t)\Big)\,dt
+			+ t\cos(tW_t)\,dW_t.
+			\]
+			
+			\item For $X_t = \mathrm{sigmoid}(W_t) = (1+e^{-W_t})^{-1}$, define $s(x) = (1+e^{-x})^{-1}$. Then
+			\[
+			s'(x) = s(x)(1-s(x)), \quad s''(x) = s(x)(1-s(x))(1-2s(x)).
+			\]
+			With $X_t = s(W_t)$, Ito’s formula gives
+			\[
+			dX_t = \tfrac12 X_t(1-X_t)(1-2X_t)\,dt + X_t(1-X_t)\,dW_t.
+			\]
+			
+			\item For $X_t = \dfrac{S_t}{P_t}$ where
+			\[
+			dS_t = \mu S_t\,dt + \sigma S_t\,dW_t, \qquad
+			dP_t = \nu P_t\,dt + \eta P_t\,dB_t, \qquad
+			d\langle W,B\rangle_t = \rho\,dt,
+			\]
+			set $f(s,p) = s/p$. Then
+			\[
+			f_s = \tfrac{1}{p}, \quad f_p = -\tfrac{s}{p^2}, \quad f_{ss}=0, \quad f_{pp}=\tfrac{2s}{p^3}, \quad f_{sp}=-\tfrac1{p^2}.
+			\]
+			Using Ito’s formula (with $d\langle S\rangle_t = \sigma^2 S_t^2 dt$, $d\langle P\rangle_t = \eta^2 P_t^2 dt$, $d\langle S,P\rangle_t = \sigma\eta\rho S_t P_t dt$):
+			\[
+			dX_t = X_t\Big[(\mu-\nu+\eta^2-\sigma\eta\rho)\,dt + \sigma\,dW_t - \eta\,dB_t\Big].
+			\]
+			Equivalently, letting $\xi = \sqrt{\sigma^2+\eta^2-2\sigma\eta\rho}$ and introducing a Brownian motion $\widetilde W$ such that
+			\[
+			\sigma\,dW_t - \eta\,dB_t = \xi\,d\widetilde W_t,
+			\]
+			we can write
+			\[
+			dX_t = X_t\Big[(\mu-\nu+\eta^2-\sigma\eta\rho)\,dt + \xi\,d\widetilde W_t\Big].
+			\]
+		\end{enumerate}
+		
+		
+		\clearpage
+		
+		\section{Question 5}
+		Fix $\kappa, \sigma>0$ and $\theta \in \mathbb{R}$. Solve the following stochastic differential equation for $X=\left(X_{t}\right)_{t \geq 0}$ :
+		
+		$$
+		\left\{\begin{array}{l}
+			d X_{t}=\kappa\left(\theta-\log \left(X_{t}\right)\right) X_{t} d t+\sigma X_{t} d W_{t} \\
+			X_{0}=x_{0}>0
+		\end{array}\right.
+		$$
+		
+		Hint: Combine the methods of solution for the GBM and OU Process.
+		
+		\textbf{Answer}
+		
+
+The given SDE is a variant of the Geometric Ornstein-Uhlenbeck (GOU) process, thus we solve this using Ito's Lemma by applying the transformation $Y_t = f(X_t) = \log(X_t)$.
+
+Let $f(x) = \log(x)$. The derivatives are $f'(x) = 1/x$ and $f''(x) = -1/x^2$.
+The drift and diffusion terms for $X_t$ are $\mu(X_t) = \kappa(\theta - \log(X_t)) X_t$ and $\sigma(X_t) = \sigma X_t$.
+
+Applying Ito's Lemma, $dY_t = f'(X_t) d X_{t} + \frac{1}{2} f''(X_t) (d X_{t})^2$:
+\begin{align*}
+	d Y_{t} &= \frac{1}{X_t} \left[ \kappa(\theta - \log(X_t)) X_t d t + \sigma X_t d W_{t} \right] + \frac{1}{2} \left(-\frac{1}{X_t^2}\right) (\sigma X_t d W_t)^2 \\
+	&= \left( \kappa(\theta - \log(X_t)) d t + \sigma d W_{t} \right) - \frac{1}{2} \left(\frac{1}{X_t^2}\right) (\sigma^2 X_t^2 d t) \quad (\text{since } (dW_t)^2 = dt) \\
+	&= \left[ \kappa(\theta - \log(X_t)) - \frac{1}{2}\sigma^2 \right] d t + \sigma d W_{t}
+\end{align*}
+Substituting $Y_t = \log(X_t)$, we obtain an Ornstein-Uhlenbeck (OU) process for $Y_t$:
+$$ d Y_{t} = \left[ \kappa\theta - \frac{1}{2}\sigma^2 - \kappa Y_t \right] d t + \sigma d W_{t} $$
+Rearranging into the standard OU form $dY_t = \kappa (\theta' - Y_t) dt + \sigma dW_t$:
+$$ d Y_{t} = \kappa \left[ \left(\theta - \frac{\sigma^2}{2\kappa}\right) - Y_t \right] d t + \sigma d W_{t} $$
+with initial condition $Y_0 = \log(x_0)$.
+
+We solve for $Y_t$ here, then the solution to the OU process $d Y_{t} = \kappa (\theta' - Y_t) d t + \sigma d W_{t}$ where $\theta' = \theta - \frac{\sigma^2}{2\kappa}$ is:
+$$ Y_t = Y_0 e^{-\kappa t} + \theta' (1 - e^{-\kappa t}) + \sigma \int_{0}^{t} e^{-\kappa (t-s)} d W_{s} $$
+Substituting $Y_0 = \log(x_0)$ and the expression for $\theta'$:
+$$ Y_t = \log(x_0) e^{-\kappa t} + \left(\theta - \frac{\sigma^2}{2\kappa}\right) (1 - e^{-\kappa t}) + \sigma \int_{0}^{t} e^{-\kappa (t-s)} d W_{s} $$
+
+The final solution for $X_t$ is obtained by exponentiating $Y_t$, $X_t = e^{Y_t}$:
+$$ X_t = \exp\left\{ \log(x_0) e^{-\kappa t} + \left(\theta - \frac{\sigma^2}{2\kappa}\right) (1 - e^{-\kappa t}) + \sigma \int_{0}^{t} e^{-\kappa (t-s)} d W_{s} \right\} $$
+
+This can be more compactly written by separating the terms:
+\begin{align*}
+	X_t &= \exp\left( \log(x_0) e^{-\kappa t} \right) \cdot \exp\left( \left(\theta - \frac{\sigma^2}{2\kappa}\right) (1 - e^{-\kappa t}) \right) \cdot \exp\left( \sigma \int_{0}^{t} e^{-\kappa (t-s)} d W_{s} \right) \\
+	&= x_0^{e^{-\kappa t}} \exp\left[ \left(\theta - \frac{\sigma^2}{2\kappa}\right) (1 - e^{-\kappa t}) \right] \exp\left[ \sigma \int_{0}^{t} e^{-\kappa (t-s)} d W_{s} \right]
+\end{align*}
+
+		
+	\end{document}
