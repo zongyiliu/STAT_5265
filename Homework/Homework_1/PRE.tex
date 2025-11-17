@@ -1,0 +1,170 @@
+\documentclass[letterpaper]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!70}
+\colorlet{Mycolor1}{green!10!orange}
+\definecolor{Mycolor2}{HTML}{00F9DE}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{lipsum}
+\usepackage{fancyvrb}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{tcolorbox}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{hyperref} 
+\usepackage{xcolor} % For custom colors
+\lstset{
+	language=Python,                % Choose the language (e.g., Python, C, R)
+	basicstyle=\ttfamily\small, % Font size and type
+	keywordstyle=\color{blue},  % Keywords color
+	commentstyle=\color{gray},  % Comments color
+	stringstyle=\color{red},    % String color
+	numbers=left,               % Line numbers
+	numberstyle=\tiny\color{gray}, % Line number style
+	stepnumber=1,               % Numbering step
+	breaklines=true,            % Auto line break
+	backgroundcolor=\color{black!5}, % Light gray background
+	frame=single,               % Frame around the code
+}
+\usepackage{float}
+\usepackage[]{amsthm} %lets us use \begin{proof}
+	\usepackage[]{amssymb} %gives us the character \varnothing
+	
+	\title{Homework 1, STAT 5265}
+	\author{Zongyi Liu}
+	\date{Wed, Sept 24, 2025}
+	\begin{document}
+		\maketitle
+		
+		\section{Question 1 }
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ be a Brownian motion and consider the SDEs defining the Geometric Brownian Motion (GBM). $S= \left(S_{t}\right)_{t \geq 0}$, and OU process, $X=\left(X_{t}\right)_{t \geq 0}$:
+		
+		$$
+		\begin{gathered}
+			d S_{t}=\mu S_{t} d t+\sigma S_{t} d W_{t}, \quad S_{0}=s_{0} \\
+			d X_{t}=\kappa\left(\theta-X_{t}\right) d t+\sigma d W_{t}, \quad X_{0}=x_{0}
+		\end{gathered}
+		$$
+		
+		Fix $\Delta t>0$, and let $\mu=0.25, \kappa=0.2, \theta=1, \sigma=0.5$ and $s_{0}=x_{0}=1.2$. From the SDEs we have that${ }^{1}$:
+		
+		$$
+		\begin{gathered}
+			S_{t+\Delta t} \stackrel{d}{\approx} S_{t}+\mu S_{t} \Delta t+\sigma S_{t} \sqrt{\Delta t} Z, \quad Z \sim N(0,1), \\
+			X_{t+\Delta t} \stackrel{d}{\approx} X_{t}+\kappa\left(\theta-X_{t}\right) \Delta t+\sigma \sqrt{\Delta t} Z, \quad Z \sim N(0,1) .
+		\end{gathered}
+		$$
+
+		
+		\footnotetext{${ }^{1}$ Here $\stackrel{d}{\approx}$ is to be read as "is approximately equal to in distribution".
+		}Using this observation, simulate (and plot) 10 paths of the GBM and OU process. You may use any programming language that you are familiar with for this task. Include your code as a separate file in your submission.
+	
+	\textbf{Answer}
+	
+	
+		
+		\clearpage
+		
+		
+		\section{Question 2}
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ and $B=\left(B_{t}\right)_{t \geq 0}$ be Brownian motions with instantaneous correlation $\rho \in[-1,1]$. Find the mean and variance of the following random variables:
+		
+		\begin{enumerate}
+			\item $W_{r}+W_{s}+W_{t}$ for $0 \leq r<s<t$.
+			\item $\exp \left\{a W_{t}+b B_{t}\right\}$ for $t>0$.
+			\item $W_{s} B_{t}$ for $0 \leq s<t$.
+		\end{enumerate}
+		
+		Hint: For (2) recall the distribution of the sum of two jointly normal random variables. Then, use the moment generating function formula for this distribution.
+		
+		
+		\textbf{Answer}
+		
+		
+		\clearpage
+		
+		\section{Question 3}
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ be a Brownian motion. Report the mean and variance of the following integrals.
+		
+		\begin{enumerate}
+			\item $\int_{0}^{T} W_{s} d W_{s}$
+			\item $\int_{0}^{T} s^{2} d W_{s}$
+			\item $\int_{0}^{T} e^{W_{s}} d W_{s}$
+			\item $\int_{0}^{T} s W_{s} d W_{s}$
+		\end{enumerate}
+		
+		\textbf{Answer}
+
+		
+		\clearpage
+		
+		\section{Question 4}
+		
+		Let $W=\left(W_{t}\right)_{t \geq 0}$ and $B=\left(B_{t}\right)_{t \geq 0}$ be Brownian motions with instantaneous correlation $\rho$. Apply Itô's formula to get the dynamics of:
+		
+		\begin{enumerate}
+			\item $X_{t}=\sin \left(t W_{t}\right)$.
+			\item $X_{t}=\operatorname{sigmoid}\left(W_{t}\right)=\left(1+e^{-W_{t}}\right)^{-1}$.
+			\item $X_{t}=S_{t} / P_{t}$ where $S=\left(S_{t}\right)_{t \geq 0}$ and $P=\left(P_{t}\right)_{t \geq 0}$ are Geometric Brownian Motions:
+		\end{enumerate}
+		
+		$$
+		\begin{aligned}
+			d S_{t} & =\mu S_{t} d t+\sigma S_{t} d W_{t} \\
+			d P_{t} & =\nu P_{t} d t+\eta P_{t} d B_{t}
+		\end{aligned}
+		$$
+		
+		\textbf{Answer}
+		
+		
+		\clearpage
+		
+		\section{Question 5}
+		Fix $\kappa, \sigma>0$ and $\theta \in \mathbb{R}$. Solve the following stochastic differential equation for $X=\left(X_{t}\right)_{t \geq 0}$ :
+		
+		$$
+		\left\{\begin{array}{l}
+			d X_{t}=\kappa\left(\theta-\log \left(X_{t}\right)\right) X_{t} d t+\sigma X_{t} d W_{t} \\
+			X_{0}=x_{0}>0
+		\end{array}\right.
+		$$
+		
+		Hint: Combine the methods of solution for the GBM and OU Process.
+		
+		\textbf{Answer}
+		
+
+
+		
+	\end{document}
