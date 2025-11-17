@@ -1,0 +1,149 @@
+\documentclass[letterpaper]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage[dvipsnames]{xcolor}
+\colorlet{LightRubineRed}{RubineRed!70}
+\colorlet{Mycolor1}{green!10!orange}
+\definecolor{Mycolor2}{HTML}{00F9DE}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{lipsum}
+\usepackage{fancyvrb}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage[export]{adjustbox}
+\graphicspath{ {./images/} }
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{tcolorbox}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{hyperref} 
+\usepackage{xcolor} % For custom colors
+\lstset{
+	language=Python,                % Choose the language (e.g., Python, C, R)
+	basicstyle=\ttfamily\small, % Font size and type
+	keywordstyle=\color{blue},  % Keywords color
+	commentstyle=\color{gray},  % Comments color
+	stringstyle=\color{red},    % String color
+	numbers=left,               % Line numbers
+	numberstyle=\tiny\color{gray}, % Line number style
+	stepnumber=1,               % Numbering step
+	breaklines=true,            % Auto line break
+	backgroundcolor=\color{black!5}, % Light gray background
+	frame=single,               % Frame around the code
+}
+\usepackage{float}
+\usepackage[]{amsthm} %lets us use \begin{proof}
+	\usepackage[]{amssymb} %gives us the character \varnothing
+	
+	\title{Homework 2, STAT 5265}
+	\author{Zongyi Liu}
+	\date{Mon, Oct 20, 2025}
+	\begin{document}
+		\maketitle
+		
+		\section{Question 1 }
+		
+		Consider the simple stock market:
+		
+		$$
+		\begin{cases}d S_{t}=\mu(t) S_{t} d t+\sigma(t) S_{t} d W_{t}, & S_{0}=s_{0} \\ d B_{t}=r(t) B_{t} d t, & B_{0}=1\end{cases}
+		$$
+		
+		where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{P}$-Brownian motion and $\mu(\cdot), r(\cdot), \sigma(\cdot)$ are deterministic functions of time. Suppose you want to price a European contract with payoff $F\left(S_{T}\right)$ at some time $T>0$. By assuming enough differentiability and the law of one price, employ a dynamic hedging argument to derive the PDE that the price should satisfy.
+		
+		\textbf{Answer}
+		
+		
+		\clearpage
+		\section{Question 2}
+		Suppose that you have a 3 asset market whose dynamics under the risk-neutral measure $\mathbb{Q}$ are given by:
+		
+		$$
+		\begin{cases}d S_{t}=r S_{t} d t+\sigma S_{t} d W_{t}^{\mathbb{Q}}, & S_{0}=s_{0} \\ d A_{t}=r A_{t} d t+\eta A_{t} d W_{t}^{\mathbb{Q}}, & A_{0}=a_{0} \\ d B_{t}=r B_{t} d t, & B_{0}=1\end{cases}
+		$$
+		
+		where $W^{\mathbb{Q}}$ is a $\mathbb{Q}$-Brownian motion.
+		
+		\begin{enumerate}
+			\item Repeat the arguments from class to derive the dynamics of the market under $\mathbb{Q}^{S}$ (the EMM induced by $S$ as the numeraire).
+			\item Write down the Radon-Nikodym Process that changes the measure from $\mathbb{Q}^{S}$ to $\mathbb{Q}^{A}$ (the EMM induced by $A$ as the numeraire). Verify that the relative (to $A$) price processes are martingales under $\mathbb{Q}^{A}$.
+			\item Relate the $\mathbb{Q}^{A}$-Brownian motion to the $\mathbb{Q}^{S}$-Brownian motion and write the dynamics of the market under $\mathbb{Q}^{A}$.
+		\end{enumerate}
+		\textbf{Answer}
+		
+
+		\clearpage
+		\section{Question 3}
+		
+		Consider the following Black-Scholes market:
+		
+		$$
+		\begin{cases}d S_{t}=\mu S_{t} d t+\sigma S_{t} d W_{t}, & S_{0}=s_{0} \\ d B_{t}=r B_{t} d t, & B_{0}=1\end{cases}
+		$$
+		
+		where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{P}$-Brownian motion. Use the Fundamental Theorem of Asset Pricing and a clever choice of numeraire(s) to price a European Put (i.e. the option with payoff $F(x)=(K-x)_{+}$). Verify that your solution coincides exactly with the result from class.
+		
+		\textbf{Answer}
+		
+		\clearpage
+		\section{Question 4}
+		
+		Consider the following Black-Scholes market:
+		
+		$$
+		\begin{cases}d S_{t}=\mu S_{t} d t+\sigma S_{t} d W_{t}, & S_{0}=s_{0} \\ d B_{t}=r B_{t} d t, & B_{0}=1\end{cases}
+		$$
+		
+		where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{P}$-Brownian motion. Suppose there is also a public volatility index in the market that is not traded,
+		
+		$$
+		d X_{t}=\kappa\left(\theta-X_{t}\right) d t+\eta d \tilde{W}_{t}, \quad X_{0}=x_{0} \in \mathbb{R}
+		$$
+		
+		defined in terms of another independent $\mathbb{P}$-Brownian motion $\tilde{W}=\left(\tilde{W}_{t}\right)_{t \geq 0}$.
+		
+		\begin{enumerate}
+			\item Is this market complete? Justify your answer.
+			\item If $\tilde{W}=W$ does your answer to (1) change? Explain your thinking.
+		\end{enumerate}
+		
+		\textbf{Answer}
+		
+		\clearpage
+		\section{Question 5}
+		Consider the simple Black-Scholes market:
+		
+		$$
+		\begin{cases}d S_{t}=\mu S_{t} d t+\sigma S_{t} d W_{t}, & S_{0}=s_{0} \\ d B_{t}=r B_{t} d t, & B_{0}=1\end{cases}
+		$$
+		
+		where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{P}$-Brownian motion. Fix a time step $\Delta t>0$, and let $\mu=0.25, r=0.05, \sigma=0.5$ and $s_{0}=10$. Let $K=10$ be the strike price for a European call option with payoff $\left(S_{T}-K\right)_{+}$at time $T=1$. Implement, using a programming language of your choice, a (discrete) delta hedging portfolio in the stock and the bank account for the call option. Denote by $P=\left(P_{t}\right)_{t \geq 0}$ the price of the call option and $H=\left(H_{t}\right)_{t \geq 0}$ the value of the hedging portfolio. 
+		
+		Create a histogram of the hedging error $P_{T}-H_{T}$ by running many simulations.
+		
+		\textbf{Answer}
+		
+		
+	\end{document}
