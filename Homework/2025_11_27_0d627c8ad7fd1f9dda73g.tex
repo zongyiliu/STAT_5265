@@ -1,0 +1,79 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage[version=4]{mhchem}
+\usepackage{stmaryrd}
+\usepackage{bbold}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, filecolor=magenta, urlcolor=cyan,}
+\urlstyle{same}
+
+\title{GU4265/GR5265 HOMEWORK \#3 }
+
+\author{}
+\date{}
+
+
+\begin{document}
+\maketitle
+Fall 2025
+
+Total Points: 50\\
+Assignment Date: Monday, November 17th.\\
+Due Date: Wednesday, November 26th at 11:59pm (EST).
+
+\section*{Instructions}
+Read each question carefully and complete all the requirements. While only a subset of the questions may be graded, it is recommended that you attempt all of them. You may discuss homework problems with your peers, but the submitted work must be your own. Identical submissions will receive a zero.\\
+Submission Instructions: Submit a PDF file of your solutions to Canvas by the stated deadline. Scanned handwritten solutions in PDF format will be accepted but must be written neatly. It is your responsibility to ensure that the solutions are clear and legible. Late submissions will NOT be accepted!
+
+\section*{Problem Set}
+Problem 1 (10 Points). Let us use the $O U$ process:
+
+$$
+d X_{t}=\kappa\left(\theta-r_{t}\right) d t+\sigma d W_{t}, \quad X_{0}=x_{0} \in \mathbb{R}
+$$
+
+where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{P}$-Brownian motion as a model for the USD/EUR exchange rate. For this purpose download 5 years worth of data from the St. Louis Fed: \href{https://fred.stlouisfed.org/series/DEXUSEU}{https://fred.stlouisfed.org/series/DEXUSEU}. The coefficients of the $O U$ process can be inferred from a Regression (AR) Model. To be explicit, by letting $\Delta=t_{i+1}-t_{i}$ a discretization of the $O U$ solution reveals that:
+
+$$
+X_{t_{i+1}}=X_{t_{i}} e^{-\kappa \Delta}+\theta\left(1-e^{-\kappa \Delta}\right)+\sigma \int_{t_{i}}^{t_{i+t}} e^{-\kappa\left(t_{i+t}-s\right)} d W_{s}
+$$
+
+Letting $\alpha=\theta\left(1-e^{-\kappa \Delta}\right), \beta=e^{-\kappa \Delta}$ and $\epsilon_{i}=\sigma \int_{t_{i}}^{t_{i+1}} e^{-\kappa\left(t_{i+1}-s\right)} d W_{s}$ so that $\gamma^{2}:=\operatorname{Var}\left(\epsilon_{i}\right)=\frac{\sigma^{2}}{2 \kappa}\left(1-e^{-2 \kappa \Delta}\right)$ we get:
+
+$$
+X_{t_{i+1}}=\alpha+\beta X_{t_{i}}+\epsilon_{i}
+$$
+
+where $\epsilon_{i} \stackrel{\text { i.i.d. }}{\sim} N\left(0, \gamma^{2}\right)$. Fit this regression model to the data using a programming language of your choice and report the implied values of $\kappa, \theta$ and $\sigma$ that you obtain by rearranging the equations for $\alpha, \beta$ and $\gamma$. Then, simulate a few trajectories from your calibrated model and compare them to the original price series.
+
+Problem 2 (10 Points). Consider the Vasicek model for the short rate $r= \left(r_{t}\right)_{t \geq 0}$ under $\mathbb{Q}$ :
+
+$$
+d r_{t}=\kappa\left(\theta-r_{t}\right) d t+\sigma d W_{t}, \quad r_{0}=c \in \mathbb{R}
+$$
+
+where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{Q}$-Brownian motion. Suppose that $c=0.055, \theta= 0.05, \kappa=2$ and $\sigma=0.03$. Using the formulas from class for the bond prices $P_{t}(T)$, plot the time $t=0$ yield curve corresponding to maturities $T \leq 10$.
+
+Problem 3 (15 points). Consider the CIR model for the short rate $r= \left(r_{t}\right)_{t \geq 0}$ under $\mathbb{Q}$ :
+
+$$
+d r_{t}=\kappa\left(\theta-r_{t}\right) d t+\sigma \sqrt{r_{t}} d W_{t}, \quad r_{0}=c \in \mathbb{R}
+$$
+
+where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{Q}$-Brownian motion. Using the PDE approach from class, repeat the arguments from the Vasicek model to obtain the system of ODEs that characterizes the bond price under the CIR model. This coincides with the exercise from class.
+
+Problem 4 (15 Points). Consider the Vasicek model for the short rate $r= \left(r_{t}\right)_{t \geq 0}$ under $\mathbb{Q}$ :
+
+$$
+\left\{d r_{t}=\kappa\left(\theta-r_{t}\right) d t+\sigma d W_{t}, \quad r_{0}=c \in \mathbb{R}\right.
+$$
+
+where $W=\left(W_{t}\right)_{t \geq 0}$ is a $\mathbb{Q}$-Brownian motion. Let $P_{t}(U)$ be the price of a $U$ maturity bond and consider the bond call option with payoff $\left(P_{T}(U)-K\right)_{+}$for some strike $K>0$ that is paid time $T<U$. In class we priced this option by using the $T$-maturity bond as a numeraire. By employing similar arguments, price the option using the $U$-maturity bond as a numeraire. Verify that you obtain the same solution.\\
+Hint: Find a way to introduce the auxilliary $\mathbb{Q}^{U}$-martingale $X_{t}=\frac{P_{t}(T)}{P_{t}(U)}$.
+
+
+\end{document}
