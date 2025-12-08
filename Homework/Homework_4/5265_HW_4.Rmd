@@ -1,0 +1,238 @@
+```{r}
+## Parameters
+S0     <- 100
+r      <- 0.05
+alpha0 <- 0.2
+alpha1 <- 0.025
+beta0  <- 0.5
+beta1  <- -0.1
+
+## strike and maturity grids
+K_vals <- seq(75, 125, by = 1)        # strikes
+T_vals <- seq(0.1, 5,  by = 0.1)      # maturities (avoid 0 for BS)
+
+dK <- K_vals[2] - K_vals[1]
+dT <- T_vals[2] - T_vals[1]
+
+nK <- length(K_vals)
+nT <- length(T_vals)
+
+## 1) Implied volatility surface
+
+imp_vol <- function(K, T){
+  (alpha0 + alpha1 * sqrt(T)) *
+    (1 + (beta0 + beta1 * T) * ( (K / S0) - 1 )^2)
+}
+
+# sigma_mat[i,j] = sigma_imp(K_i, T_j)
+sigma_mat <- outer(K_vals, T_vals,
+                   function(K, T) imp_vol(K, T))
+
+# Plot implied vol surface
+par(mfrow = c(1,1))
+persp(x = K_vals,
+      y = T_vals,
+      z = sigma_mat,
+      theta = 40, phi = 30,
+      xlab = "Strike K",
+      ylab = "Maturity T (years)",
+      zlab = "Implied Volatility σ_imp(K,T)",
+      main = "Implied Volatility Surface")
+
+## 2) Black–Scholes call price surface
+
+bs_call <- function(S0, K, T, r, sigma){
+  if(T <= 1e-8){
+    # practically maturity 0: intrinsic value
+    return(max(S0 - K, 0))
+  }
+  d1 <- (log(S0/K) + (r + 0.5*sigma^2)*T) / (sigma * sqrt(T))
+  d2 <- d1 - sigma * sqrt(T)
+  S0 * pnorm(d1) - K * exp(-r*T) * pnorm(d2)
+}
+
+call_mat <- matrix(NA, nrow = nK, ncol = nT)
+for(j in 1:nT){
+  Tj <- T_vals[j]
+  for(i in 1:nK){
+    sig <- sigma_mat[i, j]
+    call_mat[i, j] <- bs_call(S0, K_vals[i], Tj, r, sig)
+  }
+}
+
+# Plot call surface
+persp(x = K_vals,
+      y = T_vals,
+      z = call_mat,
+      theta = 40, phi = 30,
+      xlab = "Strike K",
+      ylab = "Maturity T (years)",
+      zlab = "Call Price C(K,T)",
+      main = "Call Price Surface (Black–Scholes)")
+
+## 3) Breeden–Litzenberger pdf at T = 2
+##    f_{S_T}(K) = e^{rT} * ∂²C/∂K²  (risk–neutral pdf)
+
+T_target <- 2
+j_T      <- which.min(abs(T_vals - T_target))  # closest index
+T_used   <- T_vals[j_T]
+
+C_K      <- call_mat[, j_T]           # C(K, T_target) on K grid
+
+# central finite difference for second derivative in K
+second_deriv <- rep(NA, nK)
+for(i in 2:(nK-1)){
+  second_deriv[i] <- (C_K[i+1] - 2*C_K[i] + C_K[i-1]) / (dK^2)
+}
+
+pdf_ST <- exp(r * T_used) * second_deriv
+
+# (optional) set negative numerical artifacts to 0
+pdf_ST[pdf_ST < 0] <- 0
+
+# Plot pdf vs K (only interior points are valid)
+plot(K_vals, pdf_ST,
+     type = "l",
+     xlab = "K (interpreted as S_T)",
+     ylab = "Implied pdf f_{S_T}(K)",
+     main = paste("Breeden–Litzenberger implied pdf at T =", T_used))
+
+## 4) Dupire local volatility surface
+##    Work with forward call price
+
+# Forward call prices Ctilde
+T_mat <- matrix(rep(T_vals, each = nK), nrow = nK, ncol = nT)
+Ctilde_mat <- exp(r * T_mat) * call_mat
+
+# Partial derivatives
+Ctilde_T  <- matrix(NA, nK, nT)  # partial \hat{C}/partial T 
+Ctilde_KK <- matrix(NA, nK, nT)  # partial square \hat{C}/partial square K
+
+for(j in 2:(nT-1)){
+  for(i in 2:(nK-1)){
+    # time derivative: central difference in T
+    Ctilde_T[i, j] <-
+      (Ctilde_mat[i, j+1] - Ctilde_mat[i, j-1]) / (2*dT)
+    
+    # second strike derivative: central difference in K
+    Ctilde_KK[i, j] <-
+      (Ctilde_mat[i+1, j] - 2*Ctilde_mat[i, j] + Ctilde_mat[i-1, j]) / (dK^2)
+  }
+}
+
+# Dupire local vol (interior)
+sigma_loc_mat <- matrix(NA, nK, nT)
+for(j in 2:(nT-1)){
+  for(i in 2:(nK-1)){
+    K  <- K_vals[i]
+    num   <- 2 * Ctilde_T[i, j]
+    denom <- K^2 * Ctilde_KK[i, j]
+    if(denom > 0 && num > 0){
+      sigma_loc_mat[i, j] <- sqrt(num / denom)
+    } else {
+      sigma_loc_mat[i, j] <- NA
+    }
+  }
+}
+
+# Simple boundary filling: copy neighbors
+sigma_loc_mat[1, ]      <- sigma_loc_mat[2, ]
+sigma_loc_mat[nK, ]     <- sigma_loc_mat[nK-1, ]
+sigma_loc_mat[, 1]      <- sigma_loc_mat[, 2]
+sigma_loc_mat[, nT]     <- sigma_loc_mat[, nT-1]
+
+# Plot local vol surface (t and s are identified with T and K)
+persp(x = K_vals,
+      y = T_vals,
+      z = sigma_loc_mat,
+      theta = 40, phi = 30,
+      xlab = "s",
+      ylab = "t",
+      zlab = "delta_loc(t,s)",
+      main = "Local Volatility Surface from Dupire")
+
+## 5) Simulate 5 paths under local volatility model
+##    dS_t = mu S_t dt + delta_loc(t,S_t) S_t dW_t,  S_0 = 100
+
+mu      <- 0.10
+dt      <- 0.01
+T_end   <- 2
+n_steps <- T_end / dt
+t_sim   <- seq(0, T_end, by = dt)
+n_paths <- 5
+
+# Bilinear interpolation function for delta_loc(t,s)
+sigma_loc_fun <- function(t, s){
+  # keep inside grid
+  if(t <= min(T_vals)) t <- min(T_vals)
+  if(t >= max(T_vals)) t <- max(T_vals)
+  if(s <= min(K_vals)) s <- min(K_vals)
+  if(s >= max(K_vals)) s <- max(K_vals)
+  
+  # find indices in T_vals
+  i2 <- which(T_vals >= t)[1]
+  i1 <- i2 - 1
+  if(is.na(i1) || i1 < 1) { i1 <- 1; i2 <- 2 }
+  
+  # find indices in K_vals
+  j2 <- which(K_vals >= s)[1]
+  j1 <- j2 - 1
+  if(is.na(j1) || j1 < 1) { j1 <- 1; j2 <- 2 }
+  
+  t1 <- T_vals[i1]; t2 <- T_vals[i2]
+  s1 <- K_vals[j1]; s2 <- K_vals[j2]
+  
+  # weights
+  wt_t <- (t - t1) / (t2 - t1)
+  wt_s <- (s - s1) / (s2 - s1)
+  
+  # corner values
+  v11 <- sigma_loc_mat[j1, i1]   # (s1, t1)
+  v12 <- sigma_loc_mat[j1, i2]   # (s1, t2)
+  v21 <- sigma_loc_mat[j2, i1]   # (s2, t1)
+  v22 <- sigma_loc_mat[j2, i2]   # (s2, t2)
+  
+  # bilinear interpolation
+  v1 <- (1 - wt_t) * v11 + wt_t * v12
+  v2 <- (1 - wt_t) * v21 + wt_t * v22
+  v  <- (1 - wt_s) * v1  + wt_s * v2
+  
+  # if any NA, fall back to implied vol at that point
+  if(is.na(v)){
+    v <- imp_vol(s, max(t, 1e-4))
+  }
+  return(v)
+}
+
+# Simulate paths
+set.seed(123)
+S_paths   <- matrix(NA, nrow = length(t_sim), ncol = n_paths)
+vol_paths <- matrix(NA, nrow = length(t_sim), ncol = n_paths)
+
+S_paths[1, ]   <- S0
+vol_paths[1, ] <- sigma_loc_fun(0, S0)
+
+for(p in 1:n_paths){
+  for(k in 1:n_steps){
+    t_k  <- t_sim[k]
+    S_k  <- S_paths[k, p]
+    sigma_k <- sigma_loc_fun(t_k, S_k)
+    
+    Z <- rnorm(1)
+    S_next <- S_k + mu * S_k * dt + sigma_k * S_k * sqrt(dt) * Z
+    
+    S_paths[k+1, p]   <- S_next
+    vol_paths[k+1, p] <- sigma_loc_fun(t_sim[k+1], S_next)
+  }
+}
+
+# Plot S paths
+matplot(t_sim, S_paths, type = "l", lty = 1,
+        xlab = "t", ylab = "S_t",
+        main = "Simulated Stock Paths under Local Vol")
+
+# Plot corresponding local vol paths
+matplot(t_sim, vol_paths, type = "l", lty = 1,
+        xlab = "t", ylab = "delta_loc(t,S_t)",
+        main = "Local Volatility along Simulated Paths")
+```
