@@ -7,91 +7,114 @@
 \usepackage[version=4]{mhchem}
 \usepackage{stmaryrd}
 \usepackage{bbold}
+\usepackage{mathrsfs}
 
-\title{GU4265/GR5265 HOMEWORK \#4 }
+\title{GU4265/GR5265 Practice Problems }
 
 \author{}
 \date{}
 
 
+%New command to display footnote whose markers will always be hidden
+\let\svthefootnote\thefootnote
+\newcommand\blfootnotetext[1]{%
+  \let\thefootnote\relax\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \let\thefootnote\svthefootnote%
+}
+
+%Overriding the \footnotetext command to hide the marker if its value is `0`
+\let\svfootnotetext\footnotetext
+\renewcommand\footnotetext[2][?]{%
+  \if\relax#1\relax%
+    \ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+  \else%
+    \if?#1\ifnum\value{footnote}=0\blfootnotetext{#2}\else\svfootnotetext{#2}\fi%
+    \else\svfootnotetext[#1]{#2}\fi%
+  \fi
+}
+
 \begin{document}
 \maketitle
 Fall 2025
 
-Total Points: 50\\
-Assignment Date: Wednesday, December 3rd.\\
-Due Date: Friday, December 12th at 11:59pm (EST).
-
-\section*{Instructions}
-Read each question carefully and complete all the requirements. This grade for this assignment will be entirely completion based.\\
-Submission Instructions: Submit a PDF file of your solutions to Canvas by the stated deadline. Scanned handwritten solutions in PDF format will be accepted but must be written neatly. It is your responsibility to ensure that the solutions are clear and legible. Late submissions will NOT be accepted!
+Total Points: N/A\\
+Assignment Date: Monday, December 8th.\\
+Due Date: N/A
 
 \section*{Problem Set}
-Problem 1 (25 Points). There is a stock in the market $S=\left(S_{t}\right)_{t \geq 0}$ with current price $S_{0}=100$ and a bank account $B=\left(B_{t}\right)_{t \geq 0}$ with interest rate $r=0.05$. Suppose that you are told that the current (i.e. time $t=0$ ) implied volatility surface in the market is given by the function:
+Problem 1 (Ho-Lee Model). Suppose that the short rate, $r=\left(r_{t}\right)_{t \geq 0}$, in the market has the dynamics
 
 $$
-\sigma_{i m p}(K, T)=\left(\alpha_{0}+\alpha_{1} \sqrt{T}\right)\left[1+\left(\beta_{0}+\beta_{1} T\right)\left(K / S_{0}-1\right)^{2}\right]
+d r_{t}=\theta(t) d t+\sigma d W_{t}^{\mathbb{Q}}
 $$
 
-where $\alpha_{0}=0.2, \alpha_{1}=0.025, \beta_{0}=0.5, \beta_{1}=-0.1$ for all strikes $K \geq 0$ and maturity times $T=0 \ldots 5$.
+under the risk neutral measure $\mathbb{Q}$, where $\theta(t)$ is a deterministic function of time and $W^{\mathbb{Q}}$ is a $\mathbb{Q}$-Brownian motion. Derive the $T$-maturity zero coupon bond price in this model and state the SDE that the bond price satisfies under the measure $\mathbb{Q}$.
+
+Hint: Recall the approach in the lectures for the Vasicek model.\\
+Problem 2. Let $P_{t}(T)$ be the time $t$ price of a $T$-maturity zero coupon bond. The time $t$ forward rate spanning $T$ to $U(U>T)$ is given by
+
+$$
+\ell_{t}(U, T)=\frac{1}{U-T}\left[\frac{P_{t}(T)}{P_{t}(U)}-1\right]
+$$
+
+Suppose that there is a bank in the market that will allow you to secure (at no additional cost) a loan or investment today (i.e. $t=0$ ) that will take place in the future from time $T$ until time $U$ at the simple rate $F<\ell_{0}(U, T)$. That is, an investment/debt of $\$ 1$ at time $T$ will grow to $\$(1+F(U-T))$ at $U$. Construct an arbitrage portfolio by trading in the bonds and taking advantage of the offer provided by the bank.\\
+Hint: How would you secure the forward rate for an investment at time $T$ by trading in the market?
+
+Problem 3. Draw a stylized example of the "volatility smile" in equity markets for two different times to maturity $\tau_{1}<\tau_{2}$. Explain, in your own words, how the implied volatility surface is derived from market prices and discuss the phenomenon it illustrates.
+
+Problem 4. Suppose that you would like to liquidate $q$ shares of a stock in the market with price, $S=\left(S_{t}\right)_{t \geq 0}$, and $\mathbb{P}$-dynamics,
+
+$$
+d S_{t}=-b \nu_{t} d t+\sigma d W_{t}, \quad S_{0}=s
+$$
+
+Here $\nu=\left(\nu_{t}\right)_{t \geq 0}$ is your trading rat $\varepsilon^{1}$ and $b>0$ reflects the permanent impact that you have on the price. Your inventory $Q=\left(Q_{t}\right)_{t \geq 0}$ satisfies
+
+$$
+d Q_{t}=-\nu_{t} d t, \quad Q_{0}=q
+$$
+
+We suppose that you also have a temporary impact on the price $\epsilon>0$ when you trade so that when you sell the (infinitesimal) quantity $\nu_{t} d t$ you only receive $\left(S_{t}-\epsilon \nu_{t}\right) \nu_{t} d t$ dollars. At some terminal time $T>0$ the marked-to-market value of your holdings is $Q_{T} S_{T}$. Since, your goal is to liquidate your initial position, we assume that you pay a quadratic terminal inventory penalty $\varphi\left(Q_{T}\right)^{2}>0$ on any left-over inventory at $T$. Therefore, by allowing for an arbitrary starting time $t<T$, price $S_{t}=s$, and starting inventory $q$, you are faced with the optimal control problem,
+
+$$
+\mathcal{U}(t, q, s)=\sup _{\nu \in \mathcal{A}} \mathbb{E}_{t, q, s}\left[\int_{t}^{T}\left(S_{u}-\epsilon \nu_{u}\right) \nu_{u} d u+Q_{T} S_{T}-\varphi\left(Q_{T}\right)^{2}\right]
+$$
+
+where $\mathcal{A}$ is the usual admissible set of controls from class.
 
 \begin{enumerate}
-  \item Plot the implied volatility surface for strikes $K=75 \ldots 125$ and maturity times $T=0 \ldots 5$.
-  \item Using this implied volatility function and the Black-Scholes formula illustrate the time $t=0$ price of call options, $C(K, T)$, corresponding to the strikes $K=75 \ldots 125$ and maturity times $T=0 \ldots 5$.
-  \item Using the Breeden-Litzenberger formula illustrate the implied probability distribution function for the stock price at time $T=2$.
-  \item Using Dupire's Formula, calibrate a local volatility function $\sigma_{\text {loc }}(t, s)$ from the implied volatility surface and illustrate its values for $t=0 \ldots 5$ and $s=75 \ldots 125$.
-  \item Using the calibration in (4) simulate 5 paths on $[0,2]$ from the local volatility model under $\mathbb{P}$,
+  \item Using the fact that the generator $\mathcal{L}$ of the $2 D$-process $(Q, S)$ is,
 \end{enumerate}
 
 $$
-d S_{t}=\mu S_{t} d t+\sigma_{l o c}\left(t, S_{t}\right) S_{t} d W_{t}, \quad S_{0}=100
+\mathcal{L}=-\nu \partial_{q}-b \nu \partial_{s}+\frac{1}{2} \sigma^{2} \partial_{s s}
 $$
 
-when $\mu=0.1$. You may use the time discretization $\Delta t=0.01$ with the approximation
+write down the HJB equation for this control problem.\\
+2. Using the structure of the HJB equation in $\nu$, solve for the optimal control in feedback form.\\
+3. Substitute the feedback form back into the HJB equation and obtain a simplified (but still nonlinear) PDE for $\mathcal{U}(t, q, s)$.
+
+\footnotetext{${ }^{1} \nu_{t}>0$ for selling, $\nu_{t}<0$ for buying.
+}Hint: For (2) observe the functional form of the term under the $\sup \{\cdots\}$ and compare with our solution approach in class.
+
+Problem 5. Suppose that there is a firm that extracts some natural resource (oil, gas, etc.) with price dynamics,
 
 $$
-S_{t+\Delta t} \approx S_{t}+\mu S_{t} \Delta t+\sigma_{l o c}\left(t, S_{t}\right) S_{t} \sqrt{\Delta t} Z, \quad Z \sim N(0,1)
+d X_{t}=\mu X_{t} d t+\sigma X_{t} d W_{t}
 $$
 
-Using your simulated paths, plot the trajectories of both $S$ and the volatility $\sigma_{\text {loc }}\left(t, S_{t}\right)$.
-
-Note: You may use any programming language. You do not have to explicitly compute the derivatives in the Breeden-Litzenberger and Dupire formulas. Instead, you may use a finite difference approach:
+The running profit from extraction is given as a linear function of the current price, $\kappa X_{t}-\lambda$, for some $\kappa, \lambda>0$. At any time, the firm can choose to halt extraction and receive a fixed liquidation value (or cost) $K$. The firm would like to maximize the discounted (at some rate $\beta \geq 0$ ) expected value of their extraction operation. This can be cast as the following infinite horizon optimal stopping problem,
 
 $$
-f^{\prime}(x) \approx \frac{f(x+h)-f(x)}{h}, \quad f^{\prime \prime}(x) \approx \frac{f(x+h)-2 f(x)+f(x-h)}{h^{2}} .
-$$
-
-It may be useful to define a helper function to do this in your code.\\
-Problem 2 (25 Points). Consider the following market dynamics under $\mathbb{P}$ :
-
-$$
-\begin{cases}d S_{t}=\mu S_{t} d t+\sigma S_{t} d W_{t} & S_{0}=s \in(0, \infty) \\ d B_{t}=r B_{t} d t & B_{0}=1\end{cases}
-$$
-
-In this market we know the wealth process of a self-financing portfolio that invests $\nu=\left(\nu_{t}\right)_{t \geq 0}$ dollars in the stock is given by
-
-$$
-d X_{t}=\left[(\mu-r) \nu_{t}+r X_{t}\right] d t+\sigma \nu_{t} d W_{t}, \quad X_{0}=x
-$$
-
-Suppose that you want to solve the following power utility maximization problem for your wealth at some terminal time $T>0$ :
-
-$$
-\mathcal{U}(t, x)=\sup _{\nu} \mathbb{E}_{t, x}\left[\frac{X_{T}^{1-\gamma}}{1-\gamma}\right], \quad \gamma \in(0,1) .
+V(t, x)=\sup _{\tau \in \mathcal{T}_{t, \infty}} \mathbb{E}_{t, x}\left[\int_{t}^{\tau} e^{-\beta(s-t)}\left(\kappa X_{s}-\lambda\right) d s+e^{-\beta(\tau-t)} K\right]
 $$
 
 \begin{enumerate}
-  \item Write down the HJB equation associated with this problem.
-  \item Assuming $\partial_{x x} \mathcal{U}<0$ find the feedback form for $\nu$ and simplify the HJB equation.
-  \item Using the ansatz $\mathcal{U}(t, x)=\varphi(t) \frac{x^{1-\gamma}}{1-\gamma}$ derive an ODE for $\varphi$ that can be used to determine $\mathcal{U}(t, x)$.
-  \item Suppose that you now pay a running quadratic penalty for taking risk and investing in the stock. This means that your new objective is
+  \item Argue that the value function does not need to depend on $t$.
+  \item Write down the Dynamic Programming Equation (DPE).
+  \item Write the "free boundary" ODE associated with the DPE in terms of the unknown stopping region $\mathscr{S}$ and continuation region $\mathscr{C}$.
 \end{enumerate}
-
-$$
-\mathcal{V}(t, x)=\sup _{\nu} \mathbb{E}_{t, x}\left[\frac{X_{T}^{1-\gamma}}{1-\gamma}-\kappa \int_{t}^{T} \nu_{s}^{2} d s\right], \quad \gamma \in(0,1), \quad \kappa>0
-$$
-
-Repeat steps (1)-(2) for this new formulation. For this question you do not have to simplify to a system of ODEs.
 
 
 \end{document}
